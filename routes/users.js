@@ -9,7 +9,6 @@ router.get('/', function (req, res, next) {
 router.post('/ussd', (req, res) => {
   // Read the variables sent via POST from our API
   const { sessionId, serviceCode, phoneNumber, text } = req.body;
-
   let response = '';
 
   if (text == '') {
