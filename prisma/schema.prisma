@@ -24,17 +24,17 @@ model Clients {
 }
 
 model Comptes {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  code          String
-  montant       Float
-  client        Clients?    @relation(fields: [clientsId], references: [id])
-  entreprise    Developper? @relation(fields: [entreprisesId], references: [id])
-  date_create   DateTime    @default(now())
-  date_update   DateTime    @updatedAt
-  RetratsA      Transfert[] @relation("comptesIdA")
-  RetratsB      Transfert[] @relation("comptesIdB")
-  clientsId     String?     @db.ObjectId
-  entreprisesId String?     @db.ObjectId
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  code         String
+  montant      Float
+  client       Clients?    @relation(fields: [clientsId], references: [id])
+  developper   Developper? @relation(fields: [developperId], references: [id])
+  date_create  DateTime    @default(now())
+  date_update  DateTime    @updatedAt
+  RetratsA     Transfert[] @relation("comptesIdA")
+  RetratsB     Transfert[] @relation("comptesIdB")
+  clientsId    String?     @db.ObjectId
+  developperId String?     @db.ObjectId
 }
 
 model Devise {

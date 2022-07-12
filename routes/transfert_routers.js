@@ -3,12 +3,13 @@ var router = express.Router();
 var Controllers = require('../controllers/transfert_models');
 var controllers = new Controllers();
 
-router.post('/operation/transfert/entreprise/:id',controllers.btoc);
-router.get('/historique/transfert/entreprise/:id',controllers.historiqueEntrepriseTransfert);
+//Operation developper
+router.post('/operation/transfert/developper/:id',controllers.clientForDevelopper);
+router.get('/historique/transfert/developper/:id',controllers.historiqueDevelopperTransfert);
 //read all 
-router.get('/operation/transfert/entreprise/:id',controllers.readAll);
+router.get('/operation/transfert/developper/:id',controllers.readAll);
 
-router.post('/operation/transfert/client/:id',controllers.btoc);
+router.post('/operation/transfert/client/:id',controllers.clientForClient);
 
 
 module.exports = router;
