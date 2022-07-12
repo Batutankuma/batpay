@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const {genSaltSync,compareSync,hashSync} = require('bcryptjs');
 const Notification = require('../middlewares/notification');
 const yup = require('yup');
 const Prisma = new PrismaClient();
@@ -9,18 +10,25 @@ class Client {
     //s'inscrire
     async singUp(req, res) {
         try {
+            const {firstname,lastname,email,password,phone,avatar} = req.body;
+            
+            //hashage de mot de passe
+            const salt = genSaltSync(10);
+            const passwordHash = hashSync(password,salt);
+            if(!passwordHash) throw "Cryptage crash";
+            
             //verification de l'email existance
-            const emailExist = await Prisma.clients.findFirst({where:{phone:req.body.phone}});
+            const emailExist = await Prisma.clients.findFirst({where:{phone:phone}});
             if(emailExist) throw new Error ("Email existe, veuillez crée votre nouveau mode de passe");
             // si l'adress email n'existe pas alors enregistre l'utilisateur
             const model = await Prisma.clients.create({ data: {
-                firstname: req.body.firstname,
-                lastname: req.body.lastname,
-                email:req.body.email,
-                password: req.body.password,
-                phone: req.body.phone,
+                firstname: firstname,
+                lastname: lastname,
+                email:email,
+                password: passwordHash,
+                phone:phone,
                 Comptes:{create:{code: "456",montant: 950}},
-                avatar: req.body.avatar,
+                avatar: avatar,
             },include:{Comptes:true}});
             Notification._success(res, 201, model);
         } catch (error) {
@@ -31,9 +39,11 @@ class Client {
     //se connecter
     async loginIn(req, res) {
         try {
-            const phoneExist = await Prisma.clients.findFirst({where:{phone:req.body.phone},include:{Comptes:true}});
+            const {password,phone} = req.body;
+            if (!password || phone) throw new Error("Veuillez remplire vos champt");
+            const phoneExist = await Prisma.clients.findFirst({where:{phone:phone},include:{Comptes:true}});
             if(!phoneExist) throw new Error("veuillez verifier votre number or mot de passe");
-            if(phoneExist.password != req.body.password) throw new Error("veuillez verifier votre number or mot de passe");
+            if(!compareSync(password,phoneExist.password)) throw new Error("veuillez verifier votre number or mot de passe");
             Notification._success(res, 201, phoneExist);
         } catch (error) {
             Notification.error(res, 401, error.message);
