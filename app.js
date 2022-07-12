@@ -9,7 +9,7 @@ var usersRouter = require('./routes/users');
 var clientRouter = require('./routes/client_routers');
 var compteRouter = require('./routes/compte_routers');
 var deviseRouter = require('./routes/devise_routers');
-var entrepriseRouter = require('./routes/entreprise_routers');
+var entrepriseRouter = require('./routes/developper_routers');
 var retraitRouter = require("./routes/transfert_routers");
 
 var app = express();

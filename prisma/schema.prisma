@@ -24,17 +24,17 @@ model Clients {
 }
 
 model Comptes {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
   code          String
   montant       Float
-  client        Clients?     @relation(fields: [clientsId], references: [id])
-  entreprise    Entreprises? @relation(fields: [entreprisesId], references: [id])
-  date_create   DateTime     @default(now())
-  date_update   DateTime     @updatedAt
-  RetratsA      Transfert[]  @relation("comptesIdA")
-  RetratsB      Transfert[]  @relation("comptesIdB")
-  clientsId     String?      @db.ObjectId
-  entreprisesId String?      @db.ObjectId
+  client        Clients?    @relation(fields: [clientsId], references: [id])
+  entreprise    Developper? @relation(fields: [entreprisesId], references: [id])
+  date_create   DateTime    @default(now())
+  date_update   DateTime    @updatedAt
+  RetratsA      Transfert[] @relation("comptesIdA")
+  RetratsB      Transfert[] @relation("comptesIdB")
+  clientsId     String?     @db.ObjectId
+  entreprisesId String?     @db.ObjectId
 }
 
 model Devise {
@@ -45,13 +45,12 @@ model Devise {
   date_update DateTime @updatedAt
 }
 
-model Entreprises {
+model Developper {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String
-  email       String    @unique
-  logo        String
+  lastname    String
   username    String
+  email       String    @unique
+  avatar      String
   password    String
   date_create DateTime  @default(now())
   date_update DateTime  @updatedAt
