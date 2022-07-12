@@ -6,7 +6,6 @@ const Prisma = new PrismaClient();
 
 
 class Client {
-
     //s'inscrire
     async singUp(req, res) {
         try {
@@ -16,7 +15,7 @@ class Client {
             const salt = genSaltSync(10);
             const passwordHash = hashSync(password,salt);
             if(!passwordHash) throw "Cryptage crash";
-            
+
             //verification de l'email existance
             const emailExist = await Prisma.clients.findFirst({where:{phone:phone}});
             if(emailExist) throw new Error ("Email existe, veuillez crée votre nouveau mode de passe");
@@ -35,7 +34,6 @@ class Client {
             Notification.error(res, 401, error.message);
         }
     }
-
     //se connecter
     async loginIn(req, res) {
         try {
@@ -49,7 +47,6 @@ class Client {
             Notification.error(res, 401, error.message);
         }
     }
-
     // read all client
     async findAll(req, res) {
         try {
@@ -59,7 +56,6 @@ class Client {
             Notification.error(res, 400, error.message);
         }
     }
-
     // find for id
     async findId(req, res) {
         try {
@@ -69,7 +65,6 @@ class Client {
             Notification.error(res, 400, error.message);
         }
     }
-
     //find for phone 
     async findForPhone(req,res){
         try {
@@ -81,7 +76,6 @@ class Client {
             Notification.error(res, 400, error.message); 
         }
     }
-
     //find for email
     async findForEmail(req,res){
         try {
@@ -93,7 +87,7 @@ class Client {
             Notification.error(res, 400, error.message); 
         }
     }
-
+    //update for id client
     async updateId(req, res) {
         try {
             const model = await Prisma.clients.update({ where: { id: req.id } });
@@ -102,7 +96,7 @@ class Client {
             Notification.error(res, 400, error.message);
         }
     }
-
+    //delete client for id
     async deleteId(req, res) {
         try {
             const model = await Prisma.clients.delete({ where: { id: req.id } });
