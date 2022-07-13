@@ -45,7 +45,6 @@ class Developper {
             Notification.error(res, 401, error.message);
         }
     }
-
     //se connecter
     async loginIn(req, res) {
         try {
