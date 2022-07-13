@@ -18,7 +18,7 @@ class Developper {
             } = req.body;
 
             const emailExist = await Prisma.developper.findFirst({ where: { email: email } });
-            if (emailExist) throw new Error("Email existe, veuillez crée votre nouveau mode de passe");
+            if (emailExist) throw new Error("This email address exists");
 
             //hashage
             const salt = genSaltSync(10);
@@ -45,14 +45,15 @@ class Developper {
             Notification.error(res, 401, error.message);
         }
     }
+
     //se connecter
     async loginIn(req, res) {
         try {
             const { email, password } = req.body;
             //hash
             const emailExist = await Prisma.developper.findFirst({ where: { email: email }, include: { Comptes: true } });
-            if (!emailExist) throw new Error("veuillez verifier votre number or mot de passe");
-            if (!compareSync(password, emailExist.password)) throw new Error("veuillez verifier votre number or mot de passe");
+            if (!emailExist) throw new Error("Your password or number phone is invalid");
+            if (!compareSync(password, emailExist.password)) throw new Error("Your password or number phone is invalid");
             Notification._success(res, 201, emailExist);
         } catch (error) {
             Notification.error(res, 401, error.message);
@@ -72,7 +73,7 @@ class Developper {
     async findId(req, res) {
         try {
             const key = decodeToken(req.params.key);
-            if (!key) throw Error('verifiez votre key');
+            if (!key) throw Error('Check your Auth');
             const model = await Prisma.developper.findFirst({ where: { id: key}, include: { Comptes: true } });
             Notification._success(res, 200, model);
         } catch (error) {
@@ -109,7 +110,7 @@ class Developper {
     async updateId(req, res) {
         try {
             const key = decodeToken(req.params.key);
-            if (!key) throw Error('verifiez votre key');
+            if (!key) throw Error('Check your Auth');
             const model = await Prisma.developper.update({ where: { id: key} });
             Notification._success(res, 200, model);
         } catch (error) {
@@ -120,7 +121,7 @@ class Developper {
     async deleteId(req, res) {
         try {
             const key = decodeToken(req.params.key);
-            if (!key) throw Error('verifiez votre key');
+            if (!key) throw Error('Check your Auth');
             const model = await Prisma.developper.delete({ where: { id: key} });
             Notification._success(res, 200, model);
         } catch (error) {

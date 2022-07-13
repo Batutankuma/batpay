@@ -20,7 +20,7 @@ class Authentification {
                     next();
                 }
             } else {
-                res.status(401).send('key token is not found');
+                res.status(401).send('Auth token is not found');
             }
         } catch (e) {
             res.status(401).send('Invalid request!');

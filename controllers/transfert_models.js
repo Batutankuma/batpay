@@ -13,8 +13,8 @@ class Transfert {
             const key = decodeToken(auth);
             const developper = await Prisma.comptes.findFirst({ where: { developperId:key } });
             const client = await Prisma.comptes.findFirst({ where: { client: { phone: phone } },include:{client:true} });
-            if (!client) throw Error("Email ou le mot de passe du client est invalidé");
-            if (!compareSync(password,client.client.password)) throw Error("Email ou le mot de passe du client est invalidé");
+            if (!client) throw Error("Customer's email or password is invalidated");
+            if (!compareSync(password,client.client.password)) throw Error("Customer's email or password is invalidated");
             const montantSend = parseFloat(montant);
             if (parseFloat(client.montant) > montantSend) {
                 //reduire le montant dans le compte
@@ -24,9 +24,9 @@ class Transfert {
                     data: { montant: montantSend, comptesIdA: client.id, comptesIdB: developper.id },
                     include: { compteA: true, compteB: true }
                 });
-                Notification._success(res, 201, 'ok transfert');
+                Notification._success(res, 201, 'Your operation has been successfully completed');
             } else {
-                throw new Error("Votre montant est insufissant pour effectuer cette operation");
+                throw new Error("Your amount is insufficient to perform this operation");
             }
         } catch (error) {
             Notification.error(res, 401, error.message);
@@ -49,7 +49,7 @@ class Transfert {
                 });
                 Notification._success(res, 201, model);
             } else {
-                throw new Error("Votre montant est insufissant pour effectuer cette operation");
+                throw new Error("Your amount is insufficient to perform this operation");
             }
         } catch (error) {
             Notification.error(res, 401, error.message);
@@ -84,7 +84,6 @@ class Transfert {
         try {
             const key = decodeToken(req.params.key);
             const developper = await Prisma.comptes.findMany({ where: { developperId:key } });
-            console.log(developper);
             const model = await Prisma.transfert.findFirst({where:{comptesIdB: developper.id},include:{
                 compteA:true,
                 compteB:true

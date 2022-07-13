@@ -17,10 +17,9 @@ class Client {
             const salt = genSaltSync(10);
             const passwordHash = hashSync(password,salt);
             if(!passwordHash) throw "Cryptage crash";
-
             //verification de l'email existance
             const emailExist = await Prisma.clients.findFirst({where:{phone:phone}});
-            if(emailExist) throw new Error ("Email existe, veuillez crée votre nouveau mode de passe");
+            if(emailExist) throw new Error ("This email address exists");
             // si l'adress email n'existe pas alors enregistre l'utilisateur
             const model = await Prisma.clients.create({ data: {
                 firstname: firstname,
@@ -41,10 +40,10 @@ class Client {
     async loginIn(req, res) {
         try {
             const {password,phone} = req.body;
-            if (!password || !phone) throw new Error("Il y a des champs vide");
+            if (!password || !phone) throw new Error("Please fill in all fields");
             const phoneExist = await Prisma.clients.findFirst({where:{phone:phone},include:{Comptes:true}});
-            if(!phoneExist) throw new Error("veuillez verifier votre number or mot de passe");
-            if(!compareSync(password,phoneExist.password)) throw new Error("veuillez verifier votre number or mot de passe");
+            if(!phoneExist) throw new Error("Your password or number phone is invalid");
+            if(!compareSync(password,phoneExist.password)) throw new Error("Your password or number phone is invalid");
             Notification._success(res, 201,{response:phoneExist, tokenKey: signToken(phoneExist.id)});
         } catch (error) {
             Notification.error(res, 401, error.message);
