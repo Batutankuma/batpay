@@ -1,8 +1,10 @@
 const { PrismaClient } = require('@prisma/client');
 const {genSaltSync,compareSync,hashSync} = require('bcryptjs');
+const Auth = require('../middlewares/tokenJwt');
 const Notification = require('../middlewares/notification');
 const yup = require('yup');
 const Prisma = new PrismaClient();
+const {signToken} = new Auth();
 
 
 class Client {
@@ -29,11 +31,12 @@ class Client {
                 Comptes:{create:{code: "456",montant: 950}},
                 avatar: avatar,
             },include:{Comptes:true}});
-            Notification._success(res, 201, model);
+            Notification._success(res, 201,{response:model, tokenKey: signToken(model.id)});
         } catch (error) {
             Notification.error(res, 401, error.message);
         }
     }
+
     //se connecter
     async loginIn(req, res) {
         try {
@@ -42,11 +45,12 @@ class Client {
             const phoneExist = await Prisma.clients.findFirst({where:{phone:phone},include:{Comptes:true}});
             if(!phoneExist) throw new Error("veuillez verifier votre number or mot de passe");
             if(!compareSync(password,phoneExist.password)) throw new Error("veuillez verifier votre number or mot de passe");
-            Notification._success(res, 201, phoneExist);
+            Notification._success(res, 201,{response:phoneExist, tokenKey: signToken(phoneExist.id)});
         } catch (error) {
             Notification.error(res, 401, error.message);
         }
     }
+    
     // read all client
     async findAll(req, res) {
         try {

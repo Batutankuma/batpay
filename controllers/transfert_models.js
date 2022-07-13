@@ -3,7 +3,7 @@ const Notification = require('../middlewares/notification');
 const Prisma = new PrismaClient();
 
 class Transfert {
-    //client send developper
+    //operation client send developper
     async clientForDevelopper(req, res) {
         try {
             const developper = await Prisma.comptes.findFirst({ where: { developperId:req.params.id } });
@@ -25,8 +25,7 @@ class Transfert {
             Notification.error(res, 401, error.message);
         }
     }
-    
-    //client envoi à un autre client
+    //operation client envoi à un autre client
     async clientForClient(req, res) {
         try {
             const clientA = await Prisma.comptes.findFirst({ where: { client: req.params.id } });
@@ -49,7 +48,6 @@ class Transfert {
             Notification.error(res, 401, error.message);
         }
     }
-
     //read all transfert in system
     async readAll(req, res) {
         try {
@@ -61,7 +59,6 @@ class Transfert {
             Notification.error(res, 400, error.message);
         }
     }
-
     // read all transfert in system 
     async historiqueClientTransfert(req, res) {
         try {
@@ -80,7 +77,7 @@ class Transfert {
             Notification.error(res, 400, error.message);
         }
     }
-
+    
     async historiqueDevelopperTransfert(req, res) {
         try {
             const model = await Prisma.developper.findFirst({
