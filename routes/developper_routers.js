@@ -5,11 +5,11 @@ var controllers = new Controllers();
 
 router.post('/developper/signup', controllers.singUp);
 router.post('/developper/login', controllers.loginIn);
-router.get('/developper/all', controllers.findAll);
-router.get('/developper/:id', controllers.findId);
-router.get('/developper/:email', controllers.findForEmail);
-router.get('/developper/:username', controllers.findForUsername);
-router.patch('/developper/:id', controllers.updateId);
-router.delete('/developper/:id', controllers.deleteId);
+router.get('/developper/:key/all', controllers.findAll);
+router.get('/developper/:key', controllers.findId);
+router.get('/developper/:key/email', controllers.findForEmail);
+router.get('/developper/:key/username', controllers.findForUsername);
+router.patch('/developper/:key/id', controllers.updateId);
+router.delete('/developper/:key/id', controllers.deleteId);
 
 module.exports = router;

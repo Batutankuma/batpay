@@ -41,7 +41,7 @@ class Client {
     async loginIn(req, res) {
         try {
             const {password,phone} = req.body;
-            if (!password || phone) throw new Error("Veuillez remplire vos champt");
+            if (!password || !phone) throw new Error("Il y a des champs vide");
             const phoneExist = await Prisma.clients.findFirst({where:{phone:phone},include:{Comptes:true}});
             if(!phoneExist) throw new Error("veuillez verifier votre number or mot de passe");
             if(!compareSync(password,phoneExist.password)) throw new Error("veuillez verifier votre number or mot de passe");

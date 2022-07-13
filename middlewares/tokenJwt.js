@@ -1,13 +1,12 @@
 const { decode, sign, verify } = require('jsonwebtoken');
 
 
-class AuthentificationAccess {
+class Authentification {
     //decode jsonWebToken
     decodeToken(key) {
-        const id = decode(req.headers['authorization'],{json:true});
-        return id;
+        const id = decode(key,{json:true});
+        return id.data;
     }
-
     //verify json token
     async verifyToken(req,res,next) {
         try {
@@ -21,17 +20,16 @@ class AuthentificationAccess {
                     next();
                 }
             } else {
-                res.send('key token is not found');
+                res.status(401).send('key token is not found');
             }
         } catch (e) {
-            res.send('Invalid request!');
+            res.status(401).send('Invalid request!');
         }
     }
-
     //sign token
-    signToken(id){
-        return sign({id}, process.env.SECRET_KEY,{expiresIn : 60 * 5});
+    signToken(data){
+        return sign({data}, process.env.SECRET_KEY,{expiresIn : "720h"});
     }
 }
 
-module.exports = AuthentificationAccess;
+module.exports = Authentification;

@@ -1,5 +1,7 @@
+const Auth = require('./../middlewares/tokenJwt');
 const { PrismaClient } = require('@prisma/client');
 const { compareSync, hashSync, genSaltSync } = require('bcryptjs');
+const { signToken,decodeToken } = new Auth();
 const Notification = require('../middlewares/notification');
 const Prisma = new PrismaClient();
 
@@ -28,14 +30,18 @@ class Developper {
                     username: username,
                     email: email,
                     avatar: avatar,
+                    codeAuth: "",
                     password: passwordHash,
-                    Comptes: { create: { montant: 1000, code: req.body.name } }
+                    Comptes: { create: { montant: 1000, code: "12345" } }
                 }, include: {
                     Comptes: true
                 }
-            })
-            Notification._success(res, 201, model);
+            });
+            await Prisma.developper.update({ where: { id: model.id }, data: { codeAuth: signToken(model.id) } });
+            const developper = await Prisma.developper.findFirst({ where: { id: model.id } });
+            Notification._success(res, 201, developper);
         } catch (error) {
+            console.log(error);
             Notification.error(res, 401, error.message);
         }
     }
@@ -52,9 +58,10 @@ class Developper {
             Notification.error(res, 401, error.message);
         }
     }
-    //find all developper
+    //find all developper for admin
     async findAll(req, res) {
         try {
+            const key = req.params.key;
             const model = await Prisma.developper.findMany({ include: { Comptes: true } });
             Notification._success(res, 200, model);
         } catch (error) {
@@ -64,7 +71,9 @@ class Developper {
     //find developper for id
     async findId(req, res) {
         try {
-            const model = await Prisma.developper.findFirst({ where: { id: req.params.id }, include: { Comptes: true } });
+            const key = decodeToken(req.params.key);
+            if (!key) throw Error('verifiez votre key');
+            const model = await Prisma.developper.findFirst({ where: { id: key}, include: { Comptes: true } });
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);
@@ -99,7 +108,9 @@ class Developper {
     //update id
     async updateId(req, res) {
         try {
-            const model = await Prisma.developper.update({ where: { id: req.params.id } });
+            const key = decodeToken(req.params.key);
+            if (!key) throw Error('verifiez votre key');
+            const model = await Prisma.developper.update({ where: { id: key} });
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);
@@ -108,7 +119,9 @@ class Developper {
     //delete for id
     async deleteId(req, res) {
         try {
-            const model = await Prisma.developper.delete({ where: { id: req.params.id } });
+            const key = decodeToken(req.params.key);
+            if (!key) throw Error('verifiez votre key');
+            const model = await Prisma.developper.delete({ where: { id: key} });
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);

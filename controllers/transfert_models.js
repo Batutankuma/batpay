@@ -1,14 +1,21 @@
 const { PrismaClient } = require('@prisma/client');
+const Auth = require('./../middlewares/tokenJwt');
 const Notification = require('../middlewares/notification');
+const {compareSync} = require('bcryptjs');
+const {decodeToken} = new Auth();
 const Prisma = new PrismaClient();
 
 class Transfert {
     //operation client send developper
-    async clientForDevelopper(req, res) {
+    async ForDevelopper(req, res) {
         try {
-            const developper = await Prisma.comptes.findFirst({ where: { developperId:req.params.id } });
-            const client = await Prisma.comptes.findFirst({ where: { client: { phone: req.body.phone } } });
-            const montantSend = parseFloat(req.body.montant);
+            const {phone,password,montant,auth} = req.body;
+            const key = decodeToken(auth);
+            const developper = await Prisma.comptes.findFirst({ where: { developperId:key } });
+            const client = await Prisma.comptes.findFirst({ where: { client: { phone: phone } },include:{client:true} });
+            if (!client) throw Error("Email ou le mot de passe du client est invalidé");
+            if (!compareSync(password,client.client.password)) throw Error("Email ou le mot de passe du client est invalidé");
+            const montantSend = parseFloat(montant);
             if (parseFloat(client.montant) > montantSend) {
                 //reduire le montant dans le compte
                 const compteClient = await Prisma.comptes.update({ where: { id: client.id }, data: { montant: parseFloat(client.montant) - parseFloat(montantSend) } });
@@ -17,7 +24,7 @@ class Transfert {
                     data: { montant: montantSend, comptesIdA: client.id, comptesIdB: developper.id },
                     include: { compteA: true, compteB: true }
                 });
-                Notification._success(res, 201, model);
+                Notification._success(res, 201, 'ok transfert');
             } else {
                 throw new Error("Votre montant est insufissant pour effectuer cette operation");
             }
@@ -64,12 +71,7 @@ class Transfert {
         try {
             const model = await Prisma.clients.findFirst({
                 where: { id: req.params.id }, include: {
-                    Comptes: {
-                        include: {
-                            RetratsA: true,
-                            RetratsB: true
-                        }
-                    }
+                    Comptes: {include: {RetratsA: true,RetratsB: true}}
                 }
             });
             Notification._success(res, 200, model);
@@ -78,20 +80,18 @@ class Transfert {
         }
     }
     
-    async historiqueDevelopperTransfert(req, res) {
+    async historiqueDevelopperRecevTransfert(req, res) {
         try {
-            const model = await Prisma.developper.findFirst({
-                where: { id: req.params.id }, include: {
-                    Comptes: {
-                        include: {
-                            RetratsA: true,
-                            RetratsB: true
-                        }
-                    }
-                }
-            });
+            const key = decodeToken(req.params.key);
+            const developper = await Prisma.comptes.findMany({ where: { developperId:key } });
+            console.log(developper);
+            const model = await Prisma.transfert.findFirst({where:{comptesIdB: developper.id},include:{
+                compteA:true,
+                compteB:true
+            }});
             Notification._success(res, 200, model);
         } catch (error) {
+            console.log(error);
             Notification.error(res, 400, error.message);
         }
     }
