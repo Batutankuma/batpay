@@ -52,6 +52,7 @@ model Developper {
   email       String    @unique
   avatar      String
   password    String
+  codeAuth    String?
   date_create DateTime  @default(now())
   date_update DateTime  @updatedAt
   Comptes     Comptes[]
