@@ -8,8 +8,8 @@ router.get('/compte/client/all',controllers.readForClient);
 
 //developper
 router.get('/compte/developper/:key',controllers.readForDevelopper);
-router.get('/compte/entreprise/:id',controllers.readId);
-router.patch('/compte/entreprise/:id',controllers.updateId);
-router.delete('/compte/entreprise/:id',controllers.deleteId);
+router.get('/compte/developper/:id',controllers.readId);
+router.patch('/compte/developper/:id',controllers.updateId);
+router.delete('/compte/developper/:id',controllers.deleteId);
 
 module.exports = router;
