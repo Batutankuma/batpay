@@ -54,6 +54,7 @@ class Client {
     async findAll(req, res) {
         try {
             const model = await Prisma.clients.findMany({include:{Comptes:true}});
+            console.log(model);
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);
