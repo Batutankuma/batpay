@@ -51,8 +51,8 @@ class Developper {
             const { email, password } = req.body;
             //hash
             const emailExist = await Prisma.developper.findFirst({ where: { email: email }, include: { Comptes: true } });
-            if (!emailExist) throw new Error("Your password or number phone is invalid");
-            if (!compareSync(password, emailExist.password)) throw new Error("Your password or number phone is invalid");
+            if (!emailExist) throw new Error("Your password or number email is invalid");
+            if (!compareSync(password, emailExist.password)) throw new Error("Your password or number email is invalid");
             Notification._success(res, 201, emailExist);
         } catch (error) {
             Notification.error(res, 401, error.message);
