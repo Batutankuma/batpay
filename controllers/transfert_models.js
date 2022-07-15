@@ -9,9 +9,10 @@ class Transfert {
     //operation client send developper
     async ForDevelopper(req, res) {
         try {
-            const {phone,password,montant,auth} = req.body;
-            const key = decodeToken(auth);
-            const developper = await Prisma.comptes.findFirst({ where: { developperId:key } });
+            const {phone,password,montant} = req.body;
+            const {key} = req.params;
+            const auth = decodeToken(key);
+            const developper = await Prisma.comptes.findFirst({ where: { developperId:auth } });
             const client = await Prisma.comptes.findFirst({ where: { client: { phone: phone } },include:{client:true} });
             if (!client) throw Error("Customer's email or password is invalidated");
             if (!compareSync(password,client.client.password)) throw Error("Customer's email or password is invalidated");

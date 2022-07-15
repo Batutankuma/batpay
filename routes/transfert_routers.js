@@ -8,7 +8,7 @@ var controllers = new Controllers();
 */
 
 //recev
-router.post('/operation/transfert/developper',controllers.ForDevelopper);
+router.post('/operation/transfert/developper/:key',controllers.ForDevelopper);
 router.get('/historique/transfert/developper/:key',controllers.historiqueDevelopperRecevTransfert);
 //read all 
 router.get('/operation/transfert/developper/:id',controllers.readAll);
