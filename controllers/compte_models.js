@@ -4,22 +4,18 @@ const Prisma = new PrismaClient();
 
 class Comptes {
 
-    //All operation Developper
-    async readForDevelopper(req, res) {
+    async create(req, res) {
         try {
-            const key = decodeToken(req.params.key);
-            if (!key) throw Error('Check your Auth');
-            const model = await Prisma.comptes.findFirst({ where: { id: key } });
-            Notification._success(res, 200, model);
+            const model = new Prisma.comptes.create({ data: req.body });
+            Notification._success(res, 201, model);
         } catch (error) {
-            Notification.error(res, 400, error.message);
+            Notification.error(res, 401, error.message);
         }
     }
 
-    //All client Developper
-    async readForClient(req, res) {
+    async AllId(req, res) {
         try {
-            const model = await Prisma.comptes.findFirst({ where: { id: req.params.id } });
+            const model = await Prisma.comptes.findMany({ where: { id: req.id } });
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);

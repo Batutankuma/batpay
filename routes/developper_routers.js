@@ -7,8 +7,8 @@ router.post('/developper/signup', controllers.singUp);
 router.post('/developper/login', controllers.loginIn);
 router.get('/developper/:key/all', controllers.findAll);
 router.get('/developper/:key', controllers.findId);
-router.get('/developper/:key/email', controllers.findForEmail);
-router.get('/developper/:key/username', controllers.findForUsername);
+router.get('/developper/:key/email', controllers.findForPhone);
+router.get('/developper/:key/username', controllers.findForPhone);
 router.patch('/developper/:key/id', controllers.updateId);
 router.delete('/developper/:key/id', controllers.deleteId);
 

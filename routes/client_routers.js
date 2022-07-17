@@ -10,7 +10,6 @@ router.post('/client/login',controllers.loginIn);
 router.get('/client/all',verifyToken,controllers.findAll);
 router.get('/client/:id',verifyToken,controllers.findId);
 router.get('/client/phone/:phone',verifyToken,controllers.findForPhone);
-router.get('/client/email/:email',verifyToken,controllers.findForEmail);
 router.delete('/client/:id',verifyToken,controllers.deleteId);
 
 module.exports = router;

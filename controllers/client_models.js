@@ -11,7 +11,7 @@ class Client {
     //s'inscrire
     async singUp(req, res) {
         try {
-            const {firstname,lastname,email,password,phone,avatar} = req.body;
+            const {firstname,lastname,password,phone,avatar} = req.body;
             
             //hashage de mot de passe
             const salt = genSaltSync(10);
@@ -24,7 +24,6 @@ class Client {
             const model = await Prisma.clients.create({ data: {
                 firstname: firstname,
                 lastname: lastname,
-                email:email,
                 password: passwordHash,
                 phone:phone,
                 Comptes:{create:{code: "456",montant: 950}},
@@ -80,17 +79,7 @@ class Client {
             Notification.error(res, 400, error.message); 
         }
     }
-    //find for email
-    async findForEmail(req,res){
-        try {
-            const model = await Prisma.clients.findFirst({where:{
-                email: req.params.email
-            },include:{Comptes:true}});
-            Notification._success(res, 200, model);
-        } catch (error) {
-            Notification.error(res, 400, error.message); 
-        }
-    }
+    
     //update for id client
     async updateId(req, res) {
         try {
