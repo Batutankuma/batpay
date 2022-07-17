@@ -12,17 +12,24 @@ class Transfert {
             const {phone,password,montant} = req.body;
             const {key} = req.params;
             const auth = decodeToken(key);
+            //verify compte developper
             const developper = await Prisma.comptes.findFirst({ where: { developperId:auth } });
-            const client = await Prisma.comptes.findFirst({ where: { client: { phone: phone } },include:{client:true} });
-            if (!client) throw Error("Customer's email or password is invalidated");
-            if (!compareSync(password,client.client.password)) throw Error("Customer's email or password is invalidated");
+            //verify compte user
+            const user = await Prisma.comptes.findFirst({ where: { user: { phone: phone } },include:{user:true} });
+            //if comptes user is not exist
+            if (!user) throw Error("Customer's email or password is invalidated");
+            if (!compareSync(password,user.user.password)) throw Error("Customer's phone or password is invalidated");
+            //montant by user
             const montantSend = parseFloat(montant);
-            if (parseFloat(client.montant) > montantSend) {
-                //reduire le montant dans le compte
-                const compteClient = await Prisma.comptes.update({ where: { id: client.id }, data: { montant: parseFloat(client.montant) - parseFloat(montantSend) } });
+            //verify is montant send by user is superior montant exist in his comptes
+            if (parseFloat(user.montant) > montantSend) {
+                //reduce the amount in the user's account
+                const compteUser = await Prisma.comptes.update({ where: { id: user.id }, data: { montant: parseFloat(user.montant) - parseFloat(montantSend) } });
+                //increment the amount in the developer account
                 const compteDevelopper = await Prisma.comptes.update({ where: { id: developper.id}, data: { montant: (parseFloat(developper.montant) + montantSend) } });
+                //save transfert for history
                 const model = await Prisma.transfert.create({
-                    data: { montant: montantSend, comptesIdA: client.id, comptesIdB: developper.id },
+                    data: { montant: montantSend, comptesIdA: user.id, comptesIdB: developper.id },
                     include: { compteA: true, compteB: true }
                 });
                 Notification._success(res, 201, 'Your operation has been successfully completed');
@@ -33,12 +40,16 @@ class Transfert {
             Notification.error(res, 401, error.message);
         }
     }
-    //operation client envoi à un autre client
+    //operation user send user
     async clientForClient(req, res) {
         try {
-            const clientA = await Prisma.comptes.findFirst({ where: { client: req.params.id } });
-            const clientB = await Prisma.comptes.findFirst({ where: { client: { phone: req.body.phone } } });
+            //compte send
+            const clientA = await Prisma.comptes.findFirst({ where: { user: req.params.id } });
+            //compte recev
+            const clientB = await Prisma.comptes.findFirst({ where: { user: { phone: req.body.phone } } });
+            //verify montant in compte sender and parseFloat montant
             const montantSend = parseFloat(req.body.montant);
+            //verify montant is superior montant send
             if (parseFloat(clientA.montant) > montantSend) {
                 //reduire le montant dans le compte
                 const compteClientA = await Prisma.comptes.update({ where: { id: clientA.id }, data: { montant: parseFloat(clientA.montant) - parseFloat(montantSend) } });
