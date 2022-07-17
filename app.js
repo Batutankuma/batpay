@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+var {PrismaClient} = require('@prisma/client');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -14,6 +15,7 @@ var entrepriseRouter = require('./routes/developper_routers');
 var retraitRouter = require("./routes/transfert_routers");
 
 var app = express();
+var prisma = new PrismaClient();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -43,5 +45,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// database is connecting
+const isConnectin = ()=>prisma.$connect().then(()=> console.log("Starting Application")).catch(()=> console.log("database is not connecting")); 
+isConnectin();
 
 module.exports = app;

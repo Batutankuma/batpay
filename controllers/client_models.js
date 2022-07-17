@@ -8,7 +8,7 @@ const {signToken} = new Auth();
 
 
 class Client {
-    //s'inscrire
+    //SignUp
     async singUp(req, res) {
         try {
             const {firstname,lastname,password,phone,avatar} = req.body;
@@ -18,10 +18,10 @@ class Client {
             const passwordHash = hashSync(password,salt);
             if(!passwordHash) throw "Cryptage crash";
             //verification de l'email existance
-            const emailExist = await Prisma.clients.findFirst({where:{phone:phone}});
-            if(emailExist) throw new Error ("This email address exists");
+            const phoneExist = await Prisma.user.findFirst({where:{phone:phone}});
+            if(phoneExist) throw new Error ("This numbert phone exists");
             // si l'adress email n'existe pas alors enregistre l'utilisateur
-            const model = await Prisma.clients.create({ data: {
+            const model = await Prisma.user.create({ data: {
                 firstname: firstname,
                 lastname: lastname,
                 password: passwordHash,
@@ -35,11 +35,27 @@ class Client {
         }
     }
 
-    //se connecter
+    //Login
     async loginIn(req, res) {
         try {
             const {password,phone} = req.body;
             if (!password || !phone) throw new Error("Please fill in all fields");
+            const phoneExist = await Prisma.user.findFirst({where:{phone:phone},include:{Comptes:true}});
+            if(!phoneExist) throw new Error("Your password or number phone is invalid");
+            if(!compareSync(password,phoneExist.password)) throw new Error("Your password or number phone is invalid");
+            Notification._success(res, 201,{response:phoneExist, tokenKey: signToken(phoneExist.id)});
+        } catch (error) {
+            console.error(error);
+            Notification.error(res, 401, error.message);
+        }
+    }
+
+    //forget password
+    async forget(req, res) {
+        try {
+            const {phone} = req.body;
+            //TODO method send sms if password incorrect
+            if (!phone) throw new Error("Please fill the field");
             const phoneExist = await Prisma.clients.findFirst({where:{phone:phone},include:{Comptes:true}});
             if(!phoneExist) throw new Error("Your password or number phone is invalid");
             if(!compareSync(password,phoneExist.password)) throw new Error("Your password or number phone is invalid");
@@ -52,7 +68,7 @@ class Client {
     // read all client
     async findAll(req, res) {
         try {
-            const model = await Prisma.clients.findMany({include:{Comptes:true}});
+            const model = await Prisma.user.findMany({include:{Comptes:true}});
             console.log(model);
             Notification._success(res, 200, model);
         } catch (error) {
@@ -62,7 +78,7 @@ class Client {
     // find for id
     async findId(req, res) {
         try {
-            const model = await Prisma.clients.findFirst({ where: { id: req.id },include:{Comptes:true} });
+            const model = await Prisma.user.findFirst({ where: { id: req.id },include:{Comptes:true} });
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);
@@ -71,7 +87,7 @@ class Client {
     //find for phone 
     async findForPhone(req,res){
         try {
-            const model = await Prisma.clients.findFirst({where:{
+            const model = await Prisma.user.findFirst({where:{
                 phone: req.params.phone
             },include:{Comptes:true}});
             Notification._success(res, 200, model);
@@ -83,7 +99,7 @@ class Client {
     //update for id client
     async updateId(req, res) {
         try {
-            const model = await Prisma.clients.update({ where: { id: req.id } });
+            const model = await Prisma.user.update({ where: { id: req.id } });
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);
@@ -92,7 +108,7 @@ class Client {
     //delete client for id
     async deleteId(req, res) {
         try {
-            const model = await Prisma.clients.delete({ where: { id: req.id } });
+            const model = await Prisma.user.delete({ where: { id: req.id } });
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);
