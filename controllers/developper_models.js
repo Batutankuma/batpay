@@ -32,13 +32,15 @@ class Developper {
                     },
                     Comptes: { create: { montant: 1000, code: "12345" } }
                 }, include: {
-                    Comptes: true
+                    Comptes: true,
+                    user:true
                 }
             });
             await Prisma.developper.update({ where: { id: model.id }, data: { codeAuth: signToken(model.id) } });
             const developper = await Prisma.developper.findFirst({ where: { id: model.id } });
             Notification._success(res, 201, developper);
         } catch (error) {
+            console.log(error);
             Notification.error(res, 401, error.message);
         }
     }
@@ -55,6 +57,9 @@ class Developper {
             Notification.error(res, 401, error.message);
         }
     }
+
+    //TODO ACTIVATION COMPTE DEVELOPPER
+
     //find all developper for admin
     async findAll(req, res) {
         try {
