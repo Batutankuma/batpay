@@ -43,8 +43,9 @@ class Transfert {
     //operation user send user
     async clientForClient(req, res) {
         try {
+            const key = decodeToken(req.headers.authorization);
             //compte send
-            const clientA = await Prisma.comptes.findFirst({ where: { user: req.params.id } });
+            const clientA = await Prisma.comptes.findFirst({ where: { clientsId: key } });
             //compte recev
             const clientB = await Prisma.comptes.findFirst({ where: { user: { phone: req.body.phone } } });
             //verify montant in compte sender and parseFloat montant
@@ -102,7 +103,6 @@ class Transfert {
             }});
             Notification._success(res, 200, model);
         } catch (error) {
-            console.log(error);
             Notification.error(res, 400, error.message);
         }
     }

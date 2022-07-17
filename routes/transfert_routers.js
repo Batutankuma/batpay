@@ -17,7 +17,7 @@ router.get('/operation/transfert/developper/:id',controllers.readAll);
  *  Operation Client
 */
 
-router.post('/operation/transfert/client/:id',controllers.clientForClient);
+router.post('/operation/transfert/client',controllers.clientForClient);
 
 
 module.exports = router;

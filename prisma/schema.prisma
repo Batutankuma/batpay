@@ -21,8 +21,8 @@ model User {
   date_update DateTime     @updatedAt
   Comptes     Comptes[]
   Developper  Developper[]
-  RelationA    Relation[]  @relation("userIdA")
-  RelationB    Relation[]  @relation("userIdB")
+  RelationA   Relation[]   @relation("userIdA")
+  RelationB   Relation[]   @relation("userIdB")
 }
 
 model Comptes {
@@ -70,10 +70,10 @@ model Transfert {
 
 model Relation {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  proprety    User     @relation("userIdA",fields: [userIdA], references: [id])
-  relation    User     @relation("userIdB",fields: [userIdB], references: [id])
+  relationb    User     @relation("userIdA", fields: [userIdA], references: [id])
+  relationa    User     @relation("userIdB", fields: [userIdB], references: [id])
   date_create DateTime @default(now())
   date_update DateTime @updatedAt
-  userIdA     String   
-  userIdB     String   
+  userIdA     String
+  userIdB     String
 }

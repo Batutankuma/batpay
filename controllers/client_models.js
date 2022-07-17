@@ -4,7 +4,7 @@ const Auth = require('../middlewares/tokenJwt');
 const Notification = require('../middlewares/notification');
 const yup = require('yup');
 const Prisma = new PrismaClient();
-const {signToken} = new Auth();
+const {signToken,decodeToken} = new Auth();
 
 
 class Client {
@@ -69,7 +69,6 @@ class Client {
     async findAll(req, res) {
         try {
             const model = await Prisma.user.findMany({include:{Comptes:true}});
-            console.log(model);
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);
@@ -78,7 +77,8 @@ class Client {
     // find for id
     async findId(req, res) {
         try {
-            const model = await Prisma.user.findFirst({ where: { id: req.id },include:{Comptes:true} });
+            const key = decodeToken(req.headers.authorization);
+            const model = await Prisma.user.findFirst({ where: { id: key },include:{Comptes:true} });
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);
@@ -99,7 +99,8 @@ class Client {
     //update for id client
     async updateId(req, res) {
         try {
-            const model = await Prisma.user.update({ where: { id: req.id } });
+            const key = decodeToken(req.headers.authorization);
+            const model = await Prisma.user.update({ where: { id: key } });
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);
@@ -108,7 +109,8 @@ class Client {
     //delete client for id
     async deleteId(req, res) {
         try {
-            const model = await Prisma.user.delete({ where: { id: req.id } });
+            const key = decodeToken(req.headers.authorization);
+            const model = await Prisma.user.delete({ where: { id: key } });
             Notification._success(res, 200, model);
         } catch (error) {
             Notification.error(res, 400, error.message);

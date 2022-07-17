@@ -8,8 +8,8 @@ var {verifyToken} = new Auth();
 router.post('/client/signup',controllers.singUp);
 router.post('/client/login',controllers.loginIn);
 router.get('/client/all',verifyToken,controllers.findAll);
-router.get('/client/:id',verifyToken,controllers.findId);
+router.get('/client/',verifyToken,controllers.findId);
 router.get('/client/phone/:phone',verifyToken,controllers.findForPhone);
-router.delete('/client/:id',verifyToken,controllers.deleteId);
+router.delete('/client/',verifyToken,controllers.deleteId);
 
 module.exports = router;

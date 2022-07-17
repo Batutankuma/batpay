@@ -39,7 +39,6 @@ class Developper {
             const developper = await Prisma.developper.findFirst({ where: { id: model.id } });
             Notification._success(res, 201, developper);
         } catch (error) {
-            console.log(error);
             Notification.error(res, 401, error.message);
         }
     }

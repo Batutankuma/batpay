@@ -13,6 +13,7 @@ var compteRouter = require('./routes/compte_routers');
 var deviseRouter = require('./routes/devise_routers');
 var entrepriseRouter = require('./routes/developper_routers');
 var retraitRouter = require("./routes/transfert_routers");
+var relationRouter = require('./routes/relation_routers');
 
 var app = express();
 var prisma = new PrismaClient();
@@ -28,7 +29,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/v1', indexRouter,clientRouter,compteRouter,deviseRouter,entrepriseRouter,retraitRouter);
+app.use('/api/v1', indexRouter,clientRouter,compteRouter,deviseRouter,entrepriseRouter,retraitRouter,relationRouter);
 app.use('/', usersRouter);
 
 // catch 404 and forward to error handler
