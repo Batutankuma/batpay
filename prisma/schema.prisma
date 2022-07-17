@@ -10,24 +10,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Clients {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+model User {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
   firstname   String
   lastname    String
-  email       String    @unique
-  phone       String    @unique
+  phone       String       @unique
   avatar      String
   password    String
-  date_create DateTime  @default(now())
-  date_update DateTime  @updatedAt
+  date_create DateTime     @default(now())
+  date_update DateTime     @updatedAt
   Comptes     Comptes[]
+  Developper  Developper[]
+  RelationA    Relation[]  @relation("userIdA")
+  RelationB    Relation[]  @relation("userIdB")
 }
 
 model Comptes {
   id           String      @id @default(auto()) @map("_id") @db.ObjectId
   code         String
   montant      Float
-  client       Clients?    @relation(fields: [clientsId], references: [id])
+  user         User?       @relation(fields: [clientsId], references: [id])
   developper   Developper? @relation(fields: [developperId], references: [id])
   date_create  DateTime    @default(now())
   date_update  DateTime    @updatedAt
@@ -47,15 +49,12 @@ model Devise {
 
 model Developper {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  lastname    String
-  username    String
-  email       String    @unique
-  avatar      String
-  password    String
+  user        User      @relation(fields: [userId], references: [id])
   codeAuth    String?
   date_create DateTime  @default(now())
   date_update DateTime  @updatedAt
   Comptes     Comptes[]
+  userId      String    @db.ObjectId
 }
 
 model Transfert {
@@ -67,4 +66,14 @@ model Transfert {
   date_update DateTime @updatedAt
   comptesIdA  String
   comptesIdB  String
+}
+
+model Relation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  proprety    User     @relation("userIdA",fields: [userIdA], references: [id])
+  relation    User     @relation("userIdB",fields: [userIdB], references: [id])
+  date_create DateTime @default(now())
+  date_update DateTime @updatedAt
+  userIdA     String   
+  userIdB     String   
 }

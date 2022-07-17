@@ -9,15 +9,9 @@ class Developper {
     //s'inscrire
     async singUp(req, res) {
         try {
-            const {
-                lastname,
-                username,
-                email,
-                avatar,
-                password,
-            } = req.body;
+            const {firstname,lastname,email,password,phone,avatar} = req.body;
 
-            const emailExist = await Prisma.developper.findFirst({ where: { email: email } });
+            const emailExist = await Prisma.developper.findFirst({ where: { user:{} } });
             if (emailExist) throw new Error("This email address exists");
 
             //hashage
